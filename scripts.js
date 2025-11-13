@@ -2,13 +2,29 @@
 (function () {
   'use strict';
 
+   // -------------------------------------------------------
+  // Automatic Round-Aware localStorage key
+  // -------------------------------------------------------
+  (function() {
+    var BASE_KEY = 'sponsor_progress_v1';
+    var ROUND = (window.SURVEY_ROUND || 'round1');
+    var STORAGE_KEY = BASE_KEY + '_' + ROUND;
+
+    // Remove any older round keys automatically
+    try {
+      Object.keys(localStorage).forEach(function(k){
+        if (k.startsWith(BASE_KEY) && k !== STORAGE_KEY) localStorage.removeItem(k);
+      });
+    } catch(e){ console.warn('round cleanup failed', e); }
+
+    // Make available globally
+    window.STORAGE_KEY = STORAGE_KEY;
+  })();
+
   // --- Configuration (Cloudflare Workers endpoints) ---
   var ENDPOINT_URL = 'https://cse486-online-worker.sbecerr7.workers.dev/';  // POST submissions here
   var DATA_LOADER_URL = 'https://cse486-online-data-loader.sbecerr7.workers.dev/';     // GET sponsor/project data here
-  var STORAGE_KEY = 'sponsor_progress_v1';
-  // set to 'online' for the online deployment, 'hybrid' or '' otherwise
-  var DATA_SOURCE = 'online';
-
+ 
 
   // Rubric
   var RUBRIC = [
