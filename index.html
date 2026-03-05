@@ -26,86 +26,77 @@
       </div>
 
       <!-- FORM TITLE: stays visible across all pages -->
-      <h2 class="form-title">CSE 486 Online Capstone II Sponsor Feedback Survey</h2>
+      <h2 class="form-title" id="survey-card-heading">CSE 486 Online Capstone II Sponsor Feedback Survey</h2>
 
-      <!-- Instruction under title: only on first page (identity). We'll toggle via JS -->
+      <!-- Instruction under title: only on first page (identity). Toggled via JS -->
       <p id="under-title" class="lead under-title">Enter your name and email to continue.</p>
 
-      <!-- Card (form) -->
-      <section class="card" aria-labelledby="projects-heading-outside">
+      <!-- Card (form) — aria-labelledby references the h2 above -->
+      <section class="card" aria-labelledby="survey-card-heading">
 
-        <!-- STAGE 1: Identity (inputs; greeting/lead are outside and controlled separately) -->
-<div id="stage-identity" class="stage" data-stage="identity">
-  <div class="form-row">
-    <label for="fullName">Your name</label>
-    <input id="fullName" name="fullName" type="text" placeholder="Jane Doe" />
-  </div>
+        <!-- STAGE 1: Identity -->
+        <div id="stage-identity" class="stage" data-stage="identity">
+          <div class="form-row">
+            <label for="fullName">Your name</label>
+            <input id="fullName" name="fullName" type="text" placeholder="Jane Doe" autocomplete="name" />
+          </div>
 
-  <div class="form-row">
-    <label for="email">Your email</label>
-    <input id="email" name="email" type="email" placeholder="you@example.com" />
-  </div>
+          <div class="form-row">
+            <label for="email">Your email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
 
-  <div class="actions">
-    <button id="identitySubmit" class="btn btn-primary" type="button">Continue</button>
-  </div>
-</div>
+          <div class="actions">
+            <button id="identitySubmit" class="btn btn-primary" type="button">Continue</button>
+          </div>
+        </div>
 
         <!-- STAGE 2: Projects + Matrix (hidden initially) -->
         <div id="stage-projects" class="stage" style="display:none;">
+
           <!-- PROJECT LIST SECTION -->
-      <div class="section section-projects" aria-labelledby="projects-heading">
+          <div class="section section-projects" aria-labelledby="projects-heading">
 
-  <!-- Instructions as its own inner card -->
-  <div class="instructions-card">
-    <div id="projects-instructions" class="projects-instructions" aria-live="polite">
-      <p><strong>Please follow these steps to evaluate students:</strong></p>
-      <ol>
-        <li><strong>Select the project </strong> you are evaluating from the list.</li>
-        <li><strong>Rate each student</strong> by choosing the option that best reflects their performance.</li>
-        <li><strong>Provide optional comments</strong> in the box below to share any additional feedback — this is encouraged but not required.</li>
-        <li>When finished, click <strong>Submit ratings for project</strong>. Use Back to return to the previous screen if needed.</li>
-        
-      </ol>
-        <p><strong>If you prefer to provide general feedback for the team as a whole</strong>, complete <strong>only the last row</strong> of each rating matrix (labeled for “Team Overall”) instead of rating each student individually.</p>
-            <ul>
-              <li>1 - Far Below Expectations (Fail) = 50%</li>
-              <li>2 - Quite a Bit Below Expectations = 60%</li>
-              <li>3 - Somewhat Below Expectations = 70%</li>
-              <li>4 - Meets Expectations = 80%</li>
-              <li>5 - Somewhat Above Expectations = 90%</li>
-              <li>6 - Quite a Bit Above Expectations = 100%</li>
-              <li>7 - Exceeds Expectations (A+) = 110%</li>
-            </ul>
-            <p>Please reference this evaluation rubric: <a href="http://links.asu.edu/Sponsor_Rubric" target="_blank" rel="noopener">http://links.asu.edu/Sponsor_Rubric</a></p>
-          </div>
-      
-    </div>
-  </div>
-
-  <!-- Title and project list below the instructions card -->
-  <!-- new wrapper -->
-<section class="project-list-card">
-  <h2>Project List</h2>
-  <div id="project-list">
-    <!-- project items inserted here by JS -->
-  </div>
-</section>
-
-
-
-
-          <!-- MATRIX SECTION -->
-          <div class="section section-matrix" aria-live="polite">
-            <div id="matrix-info" class="matrix-info" style="display:none;">
-              <div class="current-project-header" id="current-project-header"></div>
-              <div class="matrix-description">Please evaluate the students on Communication</div>
+            <!-- Instructions as its own inner card -->
+            <div class="instructions-card">
+              <div id="projects-instructions" class="projects-instructions" aria-live="polite">
+                <p><strong>Please follow these steps to evaluate students:</strong></p>
+                <ol>
+                  <li><strong>Select the project</strong> you are evaluating from the list.</li>
+                  <li><strong>Rate each student</strong> by choosing the option that best reflects their performance.</li>
+                  <li><strong>Provide optional comments</strong> in the box below to share any additional feedback — this is encouraged but not required.</li>
+                  <li>When finished, click <strong>Submit ratings for project</strong>. Use Back to return to the previous screen if needed.</li>
+                </ol>
+                <p><strong>If you prefer to provide general feedback for the team as a whole</strong>, complete <strong>only the last row</strong> of each rating matrix (labeled for "Team Overall") instead of rating each student individually.</p>
+                <ul>
+                  <li>1 - Far Below Expectations (Fail) = 50%</li>
+                  <li>2 - Quite a Bit Below Expectations = 60%</li>
+                  <li>3 - Somewhat Below Expectations = 70%</li>
+                  <li>4 - Meets Expectations = 80%</li>
+                  <li>5 - Somewhat Above Expectations = 90%</li>
+                  <li>6 - Quite a Bit Above Expectations = 100%</li>
+                  <li>7 - Exceeds Expectations (A+) = 110%</li>
+                </ul>
+                <p>Please reference this evaluation rubric: <a href="http://links.asu.edu/Sponsor_Rubric" target="_blank" rel="noopener">http://links.asu.edu/Sponsor_Rubric</a></p>
+              </div>
             </div>
+
+            <!-- Project list card: heading + UL (JS populates the UL) -->
+            <section class="project-list-card">
+              <h2 id="projects-heading">Project List <span id="progress-counter" class="progress-counter"></span></h2>
+              <ul id="project-list">
+                <!-- project items inserted here by JS -->
+              </ul>
+            </section>
+
+          </div><!-- end .section-projects -->
+
+          <!-- MATRIX SECTION: JS inserts #matrix-info before #matrix-container -->
+          <div class="section section-matrix" aria-live="polite">
             <div id="matrix-container" class="matrix-container"></div>
           </div>
 
-          <!-- COMMENT SECTION -->
-        
+          <!-- Comment section inserted by JS after #matrix-container -->
 
           <div class="form-status" id="form-status" aria-live="polite"></div>
 
@@ -117,23 +108,32 @@
               <button id="submitProject" class="btn btn-primary" type="button">Submit ratings for project</button>
             </div>
           </div>
-        </div>
+
+        </div><!-- end #stage-projects -->
 
         <!-- STAGE 3: Thank you -->
-        <div id="stage-thankyou" class="stage" style="display:none;text-align:center;padding:36px;">
-          <h2>Thank you — your evaluations have been submitted.</h2>
+        <div id="stage-thankyou" class="stage thankyou-stage" style="display:none;">
+          <div class="thankyou-icon" aria-hidden="true">&#10003;</div>
+          <h2>Thank you &mdash; your evaluations have been submitted.</h2>
           <p class="lead">We appreciate your time and feedback.</p>
-          <div style="margin-top:20px;display:flex;justify-content:center;gap:12px;">
+          <div class="thankyou-actions">
+            <button id="downloadReport" class="btn btn-outline" type="button">Download Report</button>
+            <button id="printReport" class="btn btn-outline" type="button">Print Report</button>
             <button id="finishStartOver" class="btn btn-outline" type="button">Start Over</button>
           </div>
-        </div>
-      </section>
+        </div><!-- end #stage-thankyou -->
 
-      <footer class="footer"><small>Built for your online captsone II course.</small></footer>
+      </section><!-- end .card -->
+
+      <footer class="footer"><small>Built for your online capstone II course.</small></footer>
     </div>
   </main>
 
-    <!-- 🟢 Add the survey round line BEFORE scripts.js -->
+  <!--
+    SURVEY_ROUND controls which semester's progress data is stored in localStorage.
+    Change this value at the start of each new semester (e.g., 'spring2026', 'fall2026').
+    When the value changes, old round data is automatically cleared for all users on next load.
+  -->
   <script>window.SURVEY_ROUND = 'round2';</script>
   <script src="scripts.js"></script>
 </body>
