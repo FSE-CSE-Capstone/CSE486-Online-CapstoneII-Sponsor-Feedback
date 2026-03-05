@@ -58,6 +58,7 @@
   var currentEmail = '';
   var currentName = '';
   var currentProject = '';
+  // completedProjects is now a map: sponsorEmail -> { projectName: true }
   var completedProjects = {};
   var stagedRatings = {};
 
@@ -152,14 +153,14 @@
   // Persistence
   function saveProgress() {
     var payload = { name: currentName, email: currentEmail, completedProjects: completedProjects, stagedRatings: stagedRatings };
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch (e) { console.warn('Could not save progress', e); }
+    try { localStorage.setItem(window.STORAGE_KEY, JSON.stringify(payload)); } catch (e) { console.warn('Could not save progress', e); }
   }
   function loadProgress() {
     try {
-      var raw = localStorage.getItem(STORAGE_KEY);
+      var raw = localStorage.getItem(window.STORAGE_KEY);
       if (!raw) return;
       var obj = JSON.parse(raw);
-      if (obj && obj.email) {
+      if (obj) {
         currentName = obj.name || '';
         currentEmail = obj.email || '';
         completedProjects = obj.completedProjects || {};
@@ -170,6 +171,12 @@
     } catch (e) { console.warn('Could not load progress', e); }
   }
 
+  // Helper to check completion for a specific email
+  function isProjectCompletedForEmail(email, projectName) {
+    if (!email || !projectName) return false;
+    return (completedProjects[email] && completedProjects[email][projectName]) ? true : false;
+  }
+
   // Populate project list
   function populateProjectListFor(email) {
     if (!projectListEl) return;
@@ -178,18 +185,20 @@
     var entry = sponsorData[email];
     if (!entry || !entry.projects) { setStatus('No projects found for that email.', 'red'); return; }
     var allProjects = Object.keys(entry.projects).slice();
+    // sort with uncompleted first
     allProjects.sort(function (a, b) {
-      var ca = completedProjects[a] ? 1 : 0;
-      var cb = completedProjects[b] ? 1 : 0;
+      var ca = isProjectCompletedForEmail(email, a) ? 1 : 0;
+      var cb = isProjectCompletedForEmail(email, b) ? 1 : 0;
       return ca - cb;
     });
     allProjects.forEach(function (p) {
       var li = el('li', { class: 'project-item', tabindex: 0, 'data-project': p });
-      li.innerHTML = completedProjects[p]
+      var completedForThisSponsor = isProjectCompletedForEmail(email, p);
+      li.innerHTML = completedForThisSponsor
         ? '<strong>' + escapeHtml(p) + '</strong> <span class="meta">(completed)</span>'
         : '<strong>' + escapeHtml(p) + '</strong>';
       li.addEventListener('click', function () {
-        if (completedProjects[p]) { setStatus('This project is already completed.', 'red'); return; }
+        if (isProjectCompletedForEmail(email, p)) { setStatus('This project is already completed.', 'red'); return; }
         Array.from(projectListEl.querySelectorAll('.project-item.active')).forEach(function (a) { a.classList.remove('active'); });
         li.classList.add('active');
         currentProject = p;
@@ -519,7 +528,11 @@
     }).then(function () {
       setStatus('Submission saved. Thank you!', 'green');
 
-      completedProjects[currentProject] = true;
+      // --- UPDATED: mark completed under current sponsor email (per-email map) ---
+      if (!currentEmail) currentEmail = (emailInput ? (emailInput.value || '').toLowerCase().trim() : '');
+      completedProjects[currentEmail] = completedProjects[currentEmail] || {};
+      completedProjects[currentEmail][currentProject] = true;
+
       if (stagedRatings && stagedRatings[currentProject]) delete stagedRatings[currentProject];
       saveProgress();
 
@@ -547,7 +560,9 @@
   function hasCompletedAllProjects() {
     var entry = sponsorData[currentEmail] || {};
     var all = Object.keys(entry.projects || {});
-    for (var i = 0; i < all.length; i++) if (!completedProjects[all[i]]) return false;
+    for (var i = 0; i < all.length; i++) {
+      if (!isProjectCompletedForEmail(currentEmail, all[i])) return false;
+    }
     return true;
   }
 
@@ -576,6 +591,7 @@
   if (backToIdentity) backToIdentity.addEventListener('click', showIdentityStage);
   if (submitProjectBtn) submitProjectBtn.addEventListener('click', submitCurrentProject);
   if (finishStartOverBtn) finishStartOverBtn.addEventListener('click', function () {
+    // Clearing local completion state (for all emails in this round). You could alter this to only clear currentEmail if preferred.
     completedProjects = {}; stagedRatings = {}; saveProgress(); currentProject = '';
     if (matrixContainer) matrixContainer.innerHTML = '';
     var commentSection = document.querySelector('.section.section-comment'); if (commentSection) commentSection.parentNode.removeChild(commentSection);
@@ -746,7 +762,6 @@
   };
 
 })();
-
 
 
 
