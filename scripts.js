@@ -7,7 +7,7 @@
   // -------------------------------------------------------
   (function() {
     var BASE_KEY = 'sponsor_progress_v1';
-    var ROUND = (window.SURVEY_ROUND || 'round1');
+    var ROUND = '2026-Spring-R1';
     var STORAGE_KEY = BASE_KEY + '_' + ROUND;
 
     // Remove any older round keys automatically
