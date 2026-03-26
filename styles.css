@@ -248,7 +248,6 @@ input:focus, select:focus, textarea:focus {
   gap: 8px;
 }
 .project-list-card h2 {
-  margin: 0;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--accent-2);
